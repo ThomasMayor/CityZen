@@ -20,7 +20,7 @@
     "mongod": "mongod --dbpath /Users/info/Downloads/mongodb-osx-x86_64-3.4.6/data/db",
     "server:dev": "tsc server.ts -w --outDir ./dist & nodemon ./dist/server.js --dev --ignore src/ --ignore www/ --ignore .tmp/",
     "server": "tsc server.ts --outDir ./dist && NODE_ENV=prod node ./dist/server.js ",
-    "deploy:server" : "tsc server.ts --outDir ./dist && cp ./server/package.json ./dist/package.json && cp ./server/.gitignore ./dist/.gitignore && git add --all && git commit -m 'upd version - `date`' && git add -f ./dist/ && git subtree split -P dist -b heroku-serve && git rm -r --cached ./dist/ && git add --all && git commit -m 'rm .temp folder' && git push heroku heroku-serve:master --force && git branch -D heroku-serve && heroku ps:scale web=1 && heroku open"
+    "deploy:server" : "tsc server.ts --outDir ./dist && cp ./server/package.json ./dist/package.json && cp ./server/.gitignore ./dist/.gitignore && git add -f ./dist/ && git add --all && git commit -m 'upd version - `date`' && git subtree split -P dist -b heroku-serve && git rm -r --cached ./dist/ && git add --all && git commit -m 'rm .temp folder' && git push heroku heroku-serve:master --force && git branch -D heroku-serve && heroku ps:scale web=1 && heroku open"
   },
   "dependencies": {
     "@angular/common": "4.1.3",
