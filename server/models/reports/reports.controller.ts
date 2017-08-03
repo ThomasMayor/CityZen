@@ -1,21 +1,18 @@
 import * as mongoose from 'mongoose';
 
 import { Report, IReportModel } from './report.model';
-import { User } from '../users/user.model';
+import { User, IUserModel } from '../users/user.model';
 import { helperController } from '../helper.controller';
-//import { DateFilter } from '../../../../cityzen-front/src/models/filter';
+import { DateFilter } from '../../../src/models/filter';
+import { userScore } from '../../../src/models/user';
 
 export const reportController = {
   insert : (req:any,res:any) => {
     //check user has right to add report
       //compute score
       //check lastreport date
-    let score = 0;
-    if (req.authUser.reports > 0) {
-      let mult = Math.min(0.5, Math.max(10, (req.authUser.approvals - req.authUser.disapprovals) / req.authUser.reports));
-      let scoreBase = req.authUser.reports * 10 + req.authUser.approvals * 20 - req.authUser.disapprovals * 5;
-      score = Math.round(scoreBase * mult);
-    }
+    let score = userScore.compute(req.authUser);
+
     let minDate = req.authUser.lastReport;
     let now = new Date();
     if (score > 1000) {
@@ -71,39 +68,43 @@ export const reportController = {
     report._creator = req.authUser._id;
     report.save((err, doc:IReportModel) => {
       if(err) {
-        console.log('save report error -> ',err)
-        res.json({ success: false, message: 'Error with save report' });
-        return;
+        return helperController.handleError(req, res, 'Impossible de sauver le constat');
       };
       req.authUser.reports++;
       req.authUser.lastReport = new Date();
-      req.authUser.save();
-      console.log('Report saved successfully');
-      res.json({ success: true, report: doc.toJSON() });
+      req.authUser.score = userScore.compute(report._creator);
+      req.authUser.save((err, doc:IUserModel) => {
+        if(err) {
+          return helperController.handleError(req, res, `Impossible de sauver l'utilisateur`);
+        };
+        console.log('Report saved successfully');
+        res.json({ success: true, report: doc.toJSON() });
+      });
     })
   },
 
   getAll : (req:any,res:any) => {
     //filters
-    let dateFilter = parseInt(req.param("dateFilter", 4 /*DateFilter.none*/));
-    let categoryFilter = req.param("categoryFilter", null);
-    if (categoryFilter !== null)
-      categoryFilter = parseInt(categoryFilter);
+    let dateFilter = req.query.dateFilter;
+    dateFilter = typeof dateFilter == "object" && Object.keys(dateFilter).length ? parseInt(dateFilter) : DateFilter.none;
+    let categoryFilter = req.query.categoryFilter;
+    categoryFilter = typeof categoryFilter == "object" && Object.keys(categoryFilter).length ? parseInt(categoryFilter) : null;
+
     let filter: any = {  };
-    if (dateFilter >= 0 /* DateFilter.day*/ && dateFilter < 4 /*DateFilter.none*/) {
+    if (dateFilter >= DateFilter.day && dateFilter < DateFilter.none) {
       let date = new Date();
       date = new Date(date.getFullYear(), date.getMonth(), date.getDate());
       switch(dateFilter) {
-        case 0/*DateFilter.day*/ :
+        case DateFilter.day :
           date = new Date(date.setDate(date.getDate() - 1))
           break;
-        case 1/*DateFilter.week*/ :
+        case DateFilter.week :
           date = new Date(date.setDate(date.getDate() - 7))
           break;
-        case 2/*DateFilter.month*/:
+        case DateFilter.month :
           date = new Date(date.setMonth(date.getMonth() - 1))
           break;
-        case 3/*DateFilter.year*/:
+        case DateFilter.year :
           date = new Date(date.setFullYear(date.getFullYear() - 1))
           break;
       }
@@ -116,9 +117,10 @@ export const reportController = {
           .sort({ created: -1 })
           .populate('_creator')
           .exec((err, docs:IReportModel[])=> {
-			if(err) return console.log(err);
+			if(err)
+        return helperController.handleError(req, res, `Impossible de retrouver les constats`);
       let docsReady = docs.map((report) => report.toJSON());
-			res.json(docsReady);
+			res.json({ success: true, reports: docsReady });
 		})
   },
 
@@ -127,9 +129,10 @@ export const reportController = {
           .sort({ created: -1 })
           .populate('_creator')
           .exec((err, docs:IReportModel[])=> {
-      if(err) return console.log(err);
+      if(err)
+        return helperController.handleError(req, res, `Impossible de retrouver les constats`);
       let docsReady = docs.map((report) => report.toJSON());
-      res.json(docsReady);
+      res.json({ success: true, reports: docsReady });
     })
   },
 
@@ -139,7 +142,9 @@ export const reportController = {
         report.disapproved.findIndex((id:any) => id.toString() == req.authUser._id) == -1) {
       report.approved.push(req.authUser._id);
       report._creator.approvals++;
+      report._creator.score = userScore.compute(report._creator);
       report._creator.save();
+
       report.save()
             .then((newreport:IReportModel) => res.send({ success: true, report: newreport }))
             .catch((err:any) => helperController.handleError(req, res, err));
@@ -154,6 +159,7 @@ export const reportController = {
         report.disapproved.findIndex((id:any) => id.toString() == req.authUser._id) == -1) {
       report.disapproved.push(req.authUser._id);
       report._creator.disapprovals++;
+      report._creator.score = userScore.compute(report._creator);
       report._creator.save();
       report.save()
             .then((newreport:IReportModel) => res.send({ success: true, report: newreport }))

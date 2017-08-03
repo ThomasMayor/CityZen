@@ -12,7 +12,7 @@ export interface IUser {
 
 export const userScore = {
 
-  compute: (user: IUser):number => {
+  compute: (user: IUser|any):number => {
     if (!user || user.reports == 0)
       return 0;
     let mult = Math.min(0.5, Math.max(10, (user.approvals - user.disapprovals) / user.reports));

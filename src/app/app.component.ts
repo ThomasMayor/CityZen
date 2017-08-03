@@ -31,7 +31,8 @@ export class MyApp {
 
     // used for an example of ngFor and navigation
     this.pages = [
-      { title: 'Carte des Constats', page: 'HomePage', icon: 'map', params: {} },
+      //{ title: 'Carte des Constats', page: 'HomePage', icon: 'map', params: {} },
+      { title: 'Hall of Fame', page: 'HallOfFamePage', icon: 'trophy', params: {} },
       { title: 'Mes Constats', page: 'ReportsPage', icon: 'clipboard', params: {} },
       { title: 'Mon Profil', page: 'EditProfilPage', icon: 'contact', params: {} },
     ];
@@ -71,7 +72,10 @@ export class MyApp {
   openPage($ev, page) {
 
     console.log('open page', page, $ev);
-    this.nav.setRoot(page.page, page.params);
+    if (page.page != 'HomePage') {
+      this.nav.push(page.page, page.params)
+    }
+    //this.nav.setRoot(page.page, page.params);
     //this.nav.setRoot(page.component);
   }
 

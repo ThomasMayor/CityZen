@@ -9,5 +9,5 @@ export const devVariables:IEnvironment = {
 
   // Back-end
   dbHost: 'mongodb://localhost:27017',
-  dbName: 'cityzenDev'
+  dbName: 'node'
 };

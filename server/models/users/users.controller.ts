@@ -17,7 +17,7 @@ export const userController = {
       email:  aa@aa.ch
       pwd:    A123456
   */
-	setup : (req:any,res:any) => {
+	/*setup : (req:any,res:any) => {
     // Use bcrypte to encrypte user password
     bcrypt.hash('A123456', BCRYPT_ROUND, (err, hash) =>{
       if(err){
@@ -44,7 +44,7 @@ export const userController = {
         res.json({ success: true, user: newuser.toJSON() });
   		})
     });
-	},
+	},*/
 
 	signup : (req:any,res:any) =>{
 		//(new User(<IUserModel>req.body))
@@ -65,23 +65,20 @@ export const userController = {
              else {
                msg = "L'email est déjà utilisé.";
              }
-
-             return res.send({success: false, message: msg});
+             return helperController.handleError(req, res, msg);
           }
 
 
         // No existing user found, create the new user
         // Check password length is >= 6
         if(req.body.password.length < PASSWORD_MIN_LENGHT) {
-          res.json({ success: false, message: `Error password require min ${PASSWORD_MIN_LENGHT} characters` });
-          return
+          return helperController.handleError(req, res, `Le mot de passe doit être composé de ${PASSWORD_MIN_LENGHT} caractères au minimum.`);
         }
         // Use bcrypte to encrypte user password
         bcrypt.hash(req.body.password, BCRYPT_ROUND, (err, hash) =>{
-          if(err){
+          if(err) {
             console.log('Error with bcrypt hash password', err);
-            res.json({ success: false, message: 'Error with bcrypt hash password' });
-            return
+            return helperController.handleError(req, res, `Erreur d'encryption.`);
           }
           // create user
           var newuser = <IUserModel>new User({
@@ -93,12 +90,14 @@ export const userController = {
             profilePicture: '',
           });
           newuser.save((err, doc:IUserModel) => {
-      			if(err) return console.log(err);
+      			if(err) {
+              return helperController.handleError(req, res, err);
+            }
             console.log('User created successfully');
             let token = jwt.sign(newuser.toJSON(), SECRET_TOKEN_KEY, {
               expiresIn: JWT_EXPIRE // expires in 24 hours
             });
-            res.json({ success: true, message: 'User created successfully', token: token });
+            res.json({ success: true, message: 'Bienvenue', token: token });
       		})
         })
     });
@@ -108,64 +107,55 @@ export const userController = {
     let token = jwt.sign(req.authUser.toJSON(), SECRET_TOKEN_KEY, {
       expiresIn: JWT_EXPIRE // expires in 24 hours
     });
-    res.json({ success: true, message: 'JWT is correct', token: token});
+    res.json({ success: true, message: 'Succès', token: token});
   },
 
   auth: (req:any,res:any)=> {
     // find the user
     User.findOne({email: req.body.email}, (err, user:IUserModel)=> {
-      if (err) throw err;
+      if (err)
+        return helperController.handleError(req, res, `Erreur interne`, 500);
+
       if (!user) {
-        res.json({ success: false, message: 'Authentication failed. User not found.' });
+        return helperController.handleError(req, res, `Echec de l'authentification.`);
       }
-      else if (user) {
-        // check if password matches
-        // Load hash from your password DB.
-        // Use bcrypte to compare user password with hash
-        bcrypt.compare(req.body.password, user.password, (err, result)=> {
-            // res == true
-            if(err){
-              console.log('Authentication failed. Error with password comparaison.', err);
-              res.json({ success: false, message: 'Authentication failed. Error with password.' });
-              return;
-            }
-            if (result === false) {
-              res.json({ success: false, message: 'Authentication failed. Wrong password.' });
-            }
-            else if (result === true){
-              // if user is found and password is right
-              // create a token
-              let token = jwt.sign(user.toJSON(), SECRET_TOKEN_KEY, {
-                expiresIn: JWT_EXPIRE // expires in 24 hours
-              });
+      // check if password matches
+      // Load hash from your password DB.
+      // Use bcrypte to compare user password with hash
+      bcrypt.compare(req.body.password, user.password, (err, result)=> {
+          if(err || result === false){
+            return helperController.handleError(req, res, `Echec de l'authentification.`);
+          }
 
-              // return the information including token as JSON
-              res.json({
-                success: true,
-                message: 'Enjoy your token!',
-                token: token
-              });
-            }
-            else {
-              res.json({ success: false, message: 'Authentication failed. Error with compare password: res-> ' + result });
-              return;
-            }
+          // if user is found and password is right
+          // create a token
+          let token = jwt.sign(user.toJSON(), SECRET_TOKEN_KEY, {
+            expiresIn: JWT_EXPIRE // expires in 24 hours
+          });
 
-        });
-      }
+          // return the information including token as JSON
+          res.json({
+            success: true,
+            message: 'Enjoy your token!',
+            token: token
+          });
+      });
     });
   },
 
-  getAll : (req:any,res:any) => {
-		User.find((err, docs:IUserModel[]) => {
-			if(err) return console.log(err);
+  getAllByScore : (req:any,res:any) => {
+		User.find()
+        .sort({ score: 1 })
+        .exec((err, docs:IUserModel[]) => {
+			if(err)
+        return helperController.handleError(req, res, `Impossible de charger les utilisateurs.`);
       let docsReady = docs.map((user)=> user.toJSON());
-			res.json(docsReady);
+			res.json({success: true, users:docsReady});
 		})
   },
 
   getUser: (req:any,res:any) => {
-    res.json(req.user.toJSON());
+    res.json({ success: false, user: req.user.toJSON()});
   },
 
   checkNameEmailExists: (email: string, name: string, id?: any): Promise<{ nameExists: boolean, emailExists: boolean }> => {
@@ -193,13 +183,13 @@ export const userController = {
   patchUser: (req:any, res:any) => {
     let user:IUserModel = req.user;
     if (!req.authUser.admin && req.authUser._id != user._id) {
-      return res.status(403).send({success: false, message: "Vous n'avez pas le droit de modifier cet utilisateur."});
+      return helperController.handleError(req, res, `Vous n'avez pas le droit de modifier cet utilisateur.`, 403);
     }
 
     if (req.body) {
       let email = req.body.email ? req.body.email : 'NotAnEmail';
       let name = req.body.name ? req.body.name : '';
-      // HACK : this.checkNameEmailExists is undefined
+      // NOTE : this.checkNameEmailExists is undefined
       userController.checkNameEmailExists(email, name, user._id)
           .then((result:any) => {
             if (result.emailExists || result.nameExists) {
@@ -227,44 +217,39 @@ export const userController = {
             const callback = (err:any, hash:string) => {
               if(err){
                 console.log('Error with bcrypt hash password', err);
-                helperController.handleError(req, res, 'Error with bcrypt hash password');
+                helperController.handleError(req, res, 'Erreur interne', 500);
                 return
               }
-              if (hash) {
+              if (hash)
                 user.password = hash;
-              }
-
-              user.save((err:any, doc:IUserModel) => {
+              user.save((err:any, newuser:IUserModel) => {
           			if(err)
-                  helperController.handleError(req, res, err);
-                else {
-                  let result: any = { success: true, message: 'User created successfully' };
-                  //if for current logged in user, generate new token
-                  if (user._id == req.authUser._id) {
-                    let token = jwt.sign(user.toJSON(), SECRET_TOKEN_KEY, {
-                      expiresIn: JWT_EXPIRE // expires in 24 hours
-                    });
-                    result.token = token;
-                  }
-                  else {
-                    result.user = user.toJSON();
-                  }
-                  res.json(result);
+                  return helperController.handleError(req, res, 'Erreur interne');
+
+                let result: any = { success: true, message: 'Modification effectuée' };
+                //if for current logged in user, generate new token
+                if (user._id == req.authUser._id) {
+                  let token = jwt.sign(newuser.toJSON(), SECRET_TOKEN_KEY, {
+                    expiresIn: JWT_EXPIRE // expires in 24 hours
+                  });
+                  result.token = token;
                 }
+                else {
+                  result.user = newuser.toJSON();
+                }
+                res.json(result);
+
           		})
 
             }
 
+            //does user want to change password ?
             if (req.body.password) {
               bcrypt.hash(req.body.password, BCRYPT_ROUND, callback);
             }
             else {
               callback('','');
             }
-
-
-
-
           });
     }
     else

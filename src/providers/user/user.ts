@@ -16,8 +16,8 @@ import { ApiEndPointsProvider } from '../api-end-points/api-end-points'
 @Injectable()
 export class UserProvider {
 
-  private users = new BehaviorSubject<IUser[]>([]);
-  public users$: Observable<IUser[]> = this.users.asObservable();
+  private usersByScore = new BehaviorSubject<IUser[]>([]);
+  public usersByScore$: Observable<IUser[]> = this.usersByScore.asObservable();
 
   constructor(public http: Http,
               private endpoints: ApiEndPointsProvider,
@@ -25,15 +25,18 @@ export class UserProvider {
     console.log('Hello UserProvider Provider');
   }
 
-  loadAll() {
+  loadAllByScore() {
     return new Promise((resolve, reject) => {
-      this.authHttp.get(this.endpoints.users)
+      this.authHttp.get(this.endpoints.users + '/score')
                    .map(res => res.json())
                    .take(1)
                    .subscribe(
                      data => {
-                       this.users.next(data);
-                       resolve(data);
+                       console.log('loadAllByScore', data)
+                       if (!data.success)
+                          return reject(data.message);
+                       this.usersByScore.next(data.users);
+                       resolve(data.users);
                      },
                      err => reject(err)
                    );

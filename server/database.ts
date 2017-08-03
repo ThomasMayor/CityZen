@@ -10,6 +10,7 @@ const MONGODB_URI:string = process.env.MONGODB_URI || `${DB_HOST}/${DB_NAME}`;
 export class DataBase{
 
   constructor(){
+    (<any>mongoose).Promise = Promise;
   }
 
   static connect(){

@@ -1,22 +1,21 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { ReportPreviewPage } from './report-preview';
-import { DatePipe } from '../../pipes/date/date';
+import { PipesModule } from '../../pipes/pipes.module';
 
 
 @NgModule({
   declarations: [
     ReportPreviewPage,
-    DatePipe
   ],
   imports: [
     IonicPageModule.forChild(ReportPreviewPage),
+    PipesModule,
   ],
   exports: [
     ReportPreviewPage
   ],
   providers: [
-    DatePipe
   ]
 })
 export class ReportPreviewPageModule {}

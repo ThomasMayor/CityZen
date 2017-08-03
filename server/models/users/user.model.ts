@@ -13,6 +13,7 @@ export interface IUserModel extends mongoose.Document {
   approvals: number,
   disapprovals: number,
   reports: number,
+  score: number,
   lastReport: Date,
 }
 

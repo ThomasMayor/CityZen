@@ -33,8 +33,10 @@ export class ReportsPage extends CoreController {
       this.reportProvider
           .loadByUserId(this.user._id)
           .subscribe(
-            (reports) => {
-              this.reports = reports;
+            (data) => {
+              if (!data.success)
+                return this.showToast('Impossible de charger les constats, veuillez réessayer.');
+              this.reports = data.reports;
             },
             (err) => {
               console.log('Error while loading reports', err);
@@ -42,10 +44,6 @@ export class ReportsPage extends CoreController {
             }
           );
     }
-  }
-
-  ionViewDidLoad() {
-    console.log('ionViewDidLoad ReportsPage');
   }
 
   showReport(report) {

@@ -56,9 +56,11 @@ export class ReportProvider {
                    .take(1)
                    .subscribe(
                      data => {
+                       if (!data.success)
+                          return reject(data.message);
                        console.log('Reports loaded', data)
-                       this.reports.next(data);
-                       resolve(data);
+                       this.reports.next(data.reports);
+                       resolve(data.reports);
                      },
                      err => reject(err)
                    );
