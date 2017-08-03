@@ -45,7 +45,15 @@ export const userController = {
   		})
     });
 	},*/
-
+  signToken(user) {
+    let userToken:any = user.toJSON();
+    userToken.profilePicture = '';
+    userToken.email = '';
+    let token = jwt.sign(userToken.toJSON(), SECRET_TOKEN_KEY, {
+      expiresIn: JWT_EXPIRE // expires in 24 hours
+    });
+    return token;
+  },
 	signup : (req:any,res:any) =>{
 		//(new User(<IUserModel>req.body))
     // check existe user in DB
@@ -94,20 +102,16 @@ export const userController = {
               return helperController.handleError(req, res, err);
             }
             console.log('User created successfully');
-            let token = jwt.sign(newuser.toJSON(), SECRET_TOKEN_KEY, {
-              expiresIn: JWT_EXPIRE // expires in 24 hours
-            });
-            res.json({ success: true, message: 'Bienvenue', token: token });
+            let token = userController.signToken(newuser);
+            res.json({ success: true, message: 'Bienvenue', token: token, user: newuser.toJSON() });
       		})
         })
     });
   },
 
   isAuth: (req:any,res:any)=> {
-    let token = jwt.sign(req.authUser.toJSON(), SECRET_TOKEN_KEY, {
-      expiresIn: JWT_EXPIRE // expires in 24 hours
-    });
-    res.json({ success: true, message: 'Succès', token: token});
+    let token = userController.signToken(req.authUser);
+    res.json({ success: true, message: 'Succès', token: token, user: req.authUser.toJSON()});
   },
 
   auth: (req:any,res:any)=> {
@@ -129,15 +133,12 @@ export const userController = {
 
           // if user is found and password is right
           // create a token
-          let token = jwt.sign(user.toJSON(), SECRET_TOKEN_KEY, {
-            expiresIn: JWT_EXPIRE // expires in 24 hours
-          });
-
-          // return the information including token as JSON
+          let token = userController.signToken(user);
           res.json({
             success: true,
             message: 'Enjoy your token!',
-            token: token
+            token: token,
+            user: user.toJSON()
           });
       });
     });
@@ -229,14 +230,10 @@ export const userController = {
                 let result: any = { success: true, message: 'Modification effectuée' };
                 //if for current logged in user, generate new token
                 if (user._id == req.authUser._id) {
-                  let token = jwt.sign(newuser.toJSON(), SECRET_TOKEN_KEY, {
-                    expiresIn: JWT_EXPIRE // expires in 24 hours
-                  });
+                  let token = userController.signToken(newuser);
                   result.token = token;
                 }
-                else {
-                  result.user = newuser.toJSON();
-                }
+                result.user = newuser.toJSON();
                 res.json(result);
 
           		})

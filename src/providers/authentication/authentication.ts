@@ -73,6 +73,6 @@ export class AuthenticationProvider {
     if (!jwt.success)
       throw Observable.throw(jwt.message);
     this.storage.set('jwt', jwt.token)
-      .then(() => this.authUser.next(this.jwtHelper.decodeToken(jwt.token)))
+      .then(() => this.authUser.next(jwt.user))
   }
 }
