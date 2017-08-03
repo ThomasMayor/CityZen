@@ -56,9 +56,10 @@ export class NewReportPage {
               private reportProvider: ReportProvider) {
       let test = this.navParams.get('test');
       this.test = test;
+      let num = Math.round(Math.random() * 276);
       this.form = this.formBuilder.group({
-        title: ['', Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(30)])],
-        description: ['', Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(500)])],
+        title: ['Titre du constat ' + num, Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(30)])],
+        description: ["Description\ndu\nconstat " + num, Validators.compose([Validators.required, Validators.minLength(6), Validators.maxLength(500)])],
         place: ['', Validators.required],
         category: ['', Validators.required]
       });

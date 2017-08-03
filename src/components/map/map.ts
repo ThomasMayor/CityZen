@@ -68,7 +68,7 @@ export class MapComponent {
               if (centerOnUser && !mapInit) {
                 this.initMap(location.coords.latitude, location.coords.longitude, zoom);
                 mapInit = true;
-                this.map.addListener('click', (e) => this.onMapClick(e))
+                this.map.addListener('dblclick', (e) => this.onMapClick(e))
                 this.initUserMarker(location.coords.latitude, location.coords.longitude);
                 resolve();
               }
