@@ -75,7 +75,7 @@ export const reportController = {
       req.authUser.score = userScore.compute(report._creator);
       req.authUser.save((err, doc:IUserModel) => {
         if(err) {
-          return helperController.handleError(req, res, `Impossible de sauver l'utilisateur ${err}`);
+          return helperController.handleError(req, res, `Impossible de sauver l'utilisateur ${err} ${req.authUser.score}`);
         };
         console.log('Report saved successfully');
         res.json({ success: true, report: doc.toJSON() });
