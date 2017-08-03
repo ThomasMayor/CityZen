@@ -60,7 +60,7 @@ export class EditProfilPage {
 
 
   get score(): number {
-    return userScore.compute(this.user); 
+    return userScore.compute(this.user);
   }
 
   togglePassword() {
@@ -98,7 +98,7 @@ export class EditProfilPage {
     if (this.form.value.password)
       user.password = this.form.value.password;
 
-    this.userProvider.update(user, this.user._id)
+    this.authProvider.update(user, this.user._id)
         .subscribe(
           (result) => {
             if (result.success) {

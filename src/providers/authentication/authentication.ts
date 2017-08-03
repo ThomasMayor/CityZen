@@ -48,7 +48,12 @@ export class AuthenticationProvider {
 
   signup(user: IUser): Observable<any> {
     return this.userProvider.create(user)
-                            .map(jwt => { this.handleJwtResponse(jwt) });
+                            .map(jwt => { this.handleJwtResponse(jwt); return jwt; });
+  }
+
+  update(user: IUser, id:string) : Observable<any> {
+    return this.userProvider.update(user, id)
+                            .map(jwt => { this.handleJwtResponse(jwt); return jwt; });
   }
 
   login(credentials: any): Observable<any> {

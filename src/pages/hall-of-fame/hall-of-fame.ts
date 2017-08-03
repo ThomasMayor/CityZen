@@ -27,7 +27,7 @@ export class HallOfFamePage {
 
   getProfileImageStyle(user): string {
     if (!user.profilePicture)
-      return `url('../assets/img/noprofilepic.png')`;
+      return `url('assets/img/noprofilepic.png')`;
     return `url(${user.profilePicture})`;
   }
 

@@ -5,7 +5,7 @@ import { Observable, BehaviorSubject } from "rxjs";
 import 'rxjs/add/operator/map';
 
 import { IUser } from '../../models/user'
-import { ApiEndPointsProvider } from '../api-end-points/api-end-points'
+import { ApiEndPointsProvider } from '../api-end-points/api-end-points';
 
 /*
   Generated class for the UserProvider provider.

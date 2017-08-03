@@ -25,7 +25,7 @@ export class ProfilPage {
 
   get profileImageStyle(): string {
     if (!this.user.profilePicture)
-      return `url('../assets/img/noprofilepic.png')`;
+      return `url('assets/img/noprofilepic.png')`;
     return `url(${this.user.profilePicture})`;
   }
 
