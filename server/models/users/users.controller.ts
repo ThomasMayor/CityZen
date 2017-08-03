@@ -21,7 +21,6 @@ export const userController = {
     // Use bcrypte to encrypte user password
     bcrypt.hash('A123456', BCRYPT_ROUND, (err, hash) =>{
       if(err){
-        console.log('User saved successfully');
         res.json({ success: false, message: 'Error with bcrypt hash password' });
         return
       }
@@ -38,7 +37,6 @@ export const userController = {
       });
       newuser.save((err, doc:IUserModel) => {
   			if(err) {
-          console.log('save user mokup-> ',err)
           res.json({ success: false, message: 'Error with save user mokup' });
           return;
         };
@@ -53,12 +51,25 @@ export const userController = {
     // check existe user in DB
     // before add new user
     // find the user
+    userController
+      .checkNameEmailExists(req.body.email, req.body.name)
+      .then((result:any) => {
+          if (result.emailExists || result.nameExists) {
+              let msg = '';
+             if (result.emailExists && result.nameExists) {
+               msg = "L'email et le nom sont déjà utilisés.";
+             }
+             else if (result.nameExists) {
+               msg = "Le nom est déjà utilisé.";
+             }
+             else {
+               msg = "L'email est déjà utilisé.";
+             }
+
+             return res.send({success: false, message: msg});
+          }
 
 
-
-    User.findOne({email: req.body.email}, (err, user:IUserModel)=> {
-      if (err) throw err;
-      if (!user) {
         // No existing user found, create the new user
         // Check password length is >= 6
         if(req.body.password.length < PASSWORD_MIN_LENGHT) {
@@ -90,12 +101,6 @@ export const userController = {
             res.json({ success: true, message: 'User created successfully', token: token });
       		})
         })
-
-      }
-      else {
-        // User alerady existe un DB
-        res.json({ success: false, message: 'User already exists'});
-      }
     });
   },
 
