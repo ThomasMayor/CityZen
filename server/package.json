@@ -14,7 +14,9 @@
     "jsonwebtoken": "^7.4.1",
     "mongodb": "^2.2.30",
     "mongoose": "^4.11.1",
-    "morgan": "^1.8.2"
+    "morgan": "^1.8.2",
+    "passport": "^0.3.2",
+    "passport-jwt": "^2.2.1",
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.0",
@@ -26,6 +28,9 @@
     "@types/mongoose": "^4.7.18",
     "@types/morgan": "^1.7.32",
     "@types/node": "^8.0.13",
+    "@types/passport": "^0.3.3",
+    "@types/passport-jwt": "^2.0.21",
+    "@types/supertest": "^2.0.2",
     "mongoose": "^4.11.1",
     "nodemon": "^1.11.0",
     "typescript": "2.4.2"
