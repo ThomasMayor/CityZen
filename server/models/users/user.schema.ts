@@ -57,6 +57,7 @@ export const UserSchema = new mongoose.Schema({
         transform: (doc:any, ret:any, options:any) => {
             delete ret.password;
             delete ret.created;
+            ret.profilePicture = '';
             return ret;
         }
 }
