@@ -49,7 +49,7 @@ export const userController = {
     let userToken:any = user.toJSON();
     userToken.profilePicture = '';
     userToken.email = '';
-    let token = jwt.sign(userToken.toJSON(), SECRET_TOKEN_KEY, {
+    let token = jwt.sign(userToken, SECRET_TOKEN_KEY, {
       expiresIn: JWT_EXPIRE // expires in 24 hours
     });
     return token;
