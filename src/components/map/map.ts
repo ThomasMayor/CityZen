@@ -106,7 +106,8 @@ export class MapComponent {
         style: google.maps.ZoomControlStyle.DEFAULT
       }
     });
-    this.markerCluster = new MarkerClusterer(this.map, this.markers, {imagePath: '/assets/img/m'});
+    
+    this.markerCluster = new MarkerClusterer(this.map, this.markers, {imagePath: 'assets/img/m'});
   }
 
   private onMarkerClick(e:google.maps.MouseEvent, marker:any) {

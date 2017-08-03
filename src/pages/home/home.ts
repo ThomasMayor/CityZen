@@ -84,7 +84,7 @@ export class HomePage {
   mapClick(e) {
     let addModal = this.modalCtrl.create('NewReportPage', {test: {lat: e.latLng.lat(),
                                                            lng: e.latLng.lng(),
-                                                          created: new Date(Math.round(Math.random() * 49935600000) + 1451602800000)   }});
+                                                          created: new Date(Math.round(Math.random() * 8206297872) + 1493589600000) }});
     addModal.onDidDismiss(item => {
       if (item) {
         console.log('New report : ', item)

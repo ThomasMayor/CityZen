@@ -42,7 +42,7 @@ export const reportController = {
     else if (score <= -1000) {
       minDate.setMonth(minDate.getMonth() + 1);
     }
-    console.log('insert report', minDate, score);
+    minDate = new Date(1999,0, 1);
     if (now.valueOf() < minDate.valueOf()) {
       let month = '';
       switch(minDate.getMonth()) {
@@ -72,7 +72,8 @@ export const reportController = {
       };
       req.authUser.reports++;
       req.authUser.lastReport = new Date();
-      req.authUser.score = userScore.compute(report._creator);
+      console.dir(userScore.compute(req.authUser));
+      req.authUser.score = userScore.compute(req.authUser);
       console.log('trying to save', req.authUser);
       req.authUser.save((err, doc:IUserModel) => {
         if(err) {

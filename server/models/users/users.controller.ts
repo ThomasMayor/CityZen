@@ -146,7 +146,7 @@ export const userController = {
 
   getAllByScore : (req:any,res:any) => {
 		User.find()
-        .sort({ score: 1 })
+        .sort({ score: -1 })
         .exec((err, docs:IUserModel[]) => {
 			if(err)
         return helperController.handleError(req, res, `Impossible de charger les utilisateurs.`);
