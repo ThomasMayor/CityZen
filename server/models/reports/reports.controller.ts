@@ -66,19 +66,19 @@ export const reportController = {
     if (!report.created)
       report.created = new Date();
     report._creator = req.authUser._id;
-    report.save((err, doc:IReportModel) => {
+    report.save((err, newreport:IReportModel) => {
       if(err) {
         return helperController.handleError(req, res, 'Impossible de sauver le constat');
       };
       req.authUser.reports++;
       req.authUser.lastReport = new Date();
       req.authUser.score = userScore.compute(report._creator);
+      console.log('trying to save', req.authUser);
       req.authUser.save((err, doc:IUserModel) => {
         if(err) {
           return helperController.handleError(req, res, `Impossible de sauver l'utilisateur ${err} ${req.authUser.score}`);
-        };
-        console.log('Report saved successfully');
-        res.json({ success: true, report: doc.toJSON() });
+        }
+        res.json({ success: true, report: newreport.toJSON() });
       });
     })
   },
