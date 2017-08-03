@@ -1,0 +1,34 @@
+<!-- Generated template for the SignupComponent component -->
+
+<form [formGroup]="credentials" (submit)="doSignup()">
+  <ion-list>
+    <ion-item>
+      <h1>Inscription</h1>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Nom complet</ion-label>
+      <ion-input type="text" formControlName="name"></ion-input>
+    </ion-item>
+    <form-message [control]="credentials.controls.name"></form-message>
+
+    <ion-item>
+      <ion-label floating>Email</ion-label>
+      <ion-input type="email" formControlName="email"></ion-input>
+    </ion-item>
+    <form-message [control]="credentials.controls.email"></form-message>
+
+    <ion-item>
+      <button ion-button clear color="dark" type="button" large item-right (click)="togglePassword()" *ngIf="showPassword && credentials.value.password" class="btnPassword"> <ion-icon name="eye"> </ion-icon> </button>
+      <button ion-button clear color="dark" type="button" large item-right (click)="togglePassword()" *ngIf="!showPassword && credentials.value.password" class="btnPassword"> <ion-icon name="eye-off"> </ion-icon> </button>
+      <ion-label floating>Mot de passe</ion-label>
+      <ion-input #inputPasswordSignup type="password" formControlName="password" clearOnEdit="false" ></ion-input>
+
+    </ion-item>
+    <form-message [control]="credentials.controls.password"></form-message>
+
+    <div padding>
+      <button ion-button color="primary" block [disabled]="!credentials.valid">Inscription</button>
+    </div>
+
+  </ion-list>
+</form>

@@ -1,0 +1,64 @@
+// http://ionicframework.com/docs/v2/theming/
+
+
+// App Global Sass
+// --------------------------------------------------
+// Put style rules here that you want to apply globally. These
+// styles are for the entire app and not just one component.
+// Additionally, this file can be also used as an entry point
+// to import other Sass files to be included in the output CSS.
+//
+// Shared Sass variables, which can be used to adjust Ionic's
+// default Sass variables, belong in "theme/variables.scss".
+//
+// To declare rules for a specific mode, create a child rule
+// for the .md, .ios, or .wp mode classes. The mode class is
+// automatically applied to the <body> element in the app.
+
+.main-menu {
+  .toolbar-background {
+    background-color: color($colors, primary);
+  }
+  .main-menu .toolbar-title {
+    color: white;
+  }
+  .greenbg {
+    background-color: color($colors, primary);
+  }
+  .menu-holder {
+    height: 74px;
+  }
+  .splash-logo {
+    margin: auto;
+    background: url('../assets/img/appicon.png') no-repeat transparent;
+    background-size: 100%;
+    width: 128px;
+    height: 128px;
+    padding-top: 10px;
+    background-position-y: 10px;
+  }
+
+}
+.userName {
+  color: color($colors, "primary");
+}
+body {
+  ion-title .toolbar-title-md {
+    font-weight: 300;
+  }
+
+  .alert-md .alert-message {
+    white-space: pre-wrap;
+  }
+  .note-md {
+    color : #676767;
+  }
+}
+button.button.btnPassword[item-right] {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  margin-bottom: -8px;
+  margin-right: -8px;
+  color: color($colors, 'primary');
+}

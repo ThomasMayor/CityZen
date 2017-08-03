@@ -1,0 +1,29 @@
+page-reports {
+  .opinion {
+    width: 30px;
+    height: 100%;
+    .opinion-wrapper {
+      ion-badge.badge[item-end] {
+        margin: 0;
+        margin-left: 5px;
+      }
+      &.top {
+        position: absolute;
+        top : 20px;
+        right: 0px;
+      }
+      &.bottom {
+        position: absolute;
+        bottom: 20px;
+        right: 0px;
+      }
+      ion-icon {
+        font-size: 100%;
+      }
+
+    }
+  }
+  .place {
+    color: color($colors, 'primary');
+  }
+}
