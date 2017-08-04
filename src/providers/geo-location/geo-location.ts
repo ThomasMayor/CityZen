@@ -30,7 +30,7 @@ export class GeoLocationProvider {
                 .subscribe((resp) => { this.position.next(resp); });
     }).catch((err) => {
       this.serviceAvailable.next(false);
-      console.log('Geolocation error');
+      console.log('Geolocation error', err);
     });
   }
 
